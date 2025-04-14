@@ -1,0 +1,8 @@
+streamlit
+pandas
+plotly
+chardet
+requests
+chardet
+io
+os
