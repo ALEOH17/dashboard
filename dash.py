@@ -153,6 +153,7 @@ with col1:
     )
 
     st.plotly_chart(fig_mimo, use_container_width=True)
+    st.caption("🟢 Count and percentage of cells with Massive MIMO installed.")
 
 # --- GRAFICO PIE 5G READY (solo si se filtra 4G) ---
 with col2:
@@ -189,6 +190,7 @@ with col2:
         )
 
         st.plotly_chart(fig_5g, use_container_width=True)
+        st.caption("ℹ️ Visualization available only for 4G, as 5G requires 5G Ready support.")
 
 # --- GRAFICO PIE BEAMFORMING ---
 st.subheader("📡 Distribution by support to Beamforming")
@@ -223,6 +225,7 @@ fig_beam.update_traces(
 )
 
 st.plotly_chart(fig_beam, use_container_width=True)
+st.caption("🟢 Number of cells that support Beamforming.")
 
 # --- GRAFICO CIRCULAR FREQUENCY BAND ---
 col3, col4 = st.columns(2)
@@ -270,6 +273,7 @@ with col3:
 
     # Mostrar gráfico en el dashboard
     st.plotly_chart(fig_band_pie, use_container_width=True)
+    st.caption("📡 Frequency band distribution across technologies. Hover to see tech-specific counts.")
 
 # --- GRAFICO CIRCULAR TXRX ---
 with col4:
@@ -316,6 +320,7 @@ with col4:
 
     # Mostrar el gráfico
     st.plotly_chart(fig_txrx_pie, use_container_width=True)
+    st.caption("📶 Distribution of MIMO types (TX/RX) with counts per technology.")
 
 # --- TABLA FINAL ---
 st.subheader("📋 Station Details by cells")
