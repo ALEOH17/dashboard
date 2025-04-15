@@ -318,7 +318,7 @@ with col4:
     st.plotly_chart(fig_txrx_pie, use_container_width=True)
 
 # --- TABLA FINAL ---
-st.subheader("📋 Station Details")
+st.subheader("📋 Station Details by cells")
 st.dataframe(df_filtrado[['site_id', 'Departamento', 'Provincia' , 'Distrito' ,'Technology', 'Tiene instalado Massive MIMO', '5G Ready', 'Frequency Band', 'Cell Activate State']], use_container_width=True)
 
 st.info("Interactive visualization of base stations filtered by department and technology.")
