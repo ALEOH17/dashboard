@@ -92,14 +92,17 @@ conteo_dep = conteo_dep.groupby('Departamento')['site_id'].count().reset_index(n
 conteo_dep = conteo_dep[~conteo_dep['Departamento'].isin(['ND', 'Otros'])]  # excluir ND y Otros
 conteo_dep = conteo_dep.sort_values(by='Quantity', ascending=False)
 
+# 🔄 Renombrar columna solo para el gráfico
+conteo_dep.rename(columns={'Departamento': 'Department'}, inplace=True)
+
 fig_dep = px.bar(
     conteo_dep,
-    x='Quantity', y='Departamento', orientation='h',
+    x='Quantity', y='Department', orientation='h',
     color='Quantity', text='Quantity', title='Base Stations by Department',
     color_continuous_scale='Blues'
 )
 fig_dep.update_layout(
-    yaxis=dict(tickmode='array', tickvals=conteo_dep['Departamento'], ticktext=conteo_dep['Departamento']),
+    yaxis=dict(tickmode='array', tickvals=conteo_dep['Department'], ticktext=conteo_dep['Department']),
     margin=dict(l=150, r=20, t=40, b=40)
 )
 st.plotly_chart(fig_dep, use_container_width=True)
@@ -118,30 +121,34 @@ col1, col2 = st.columns(2)
 with col1:
     st.subheader("📶 Massive MIMO installed")
 
-    # Conteo por tecnología solo para los que tienen 'Si'
-    tech_si = df_filtrado[df_filtrado['Tiene instalado Massive MIMO'].str.upper() == 'SI']
+    # ✅ Crear columna temporal para mostrar Yes/No sin alterar los datos
+    df_mimo_plot = df_filtrado.copy()
+    df_mimo_plot['MIMO Display'] = df_mimo_plot['Tiene instalado Massive MIMO'].apply(lambda x: 'Yes' if str(x).strip().upper() == 'SI' else 'No')
+
+    # Conteo por tecnología solo para los que tienen 'Yes'
+    tech_si = df_mimo_plot[df_mimo_plot['MIMO Display'] == 'Yes']
     tech_counts = tech_si['Technology'].value_counts().to_dict()
 
     # Generar lista personalizada por cada valor del gráfico
     customdata_mimo = []
-    for val in df_filtrado['Tiene instalado Massive MIMO']:
-        if str(val).upper() == 'SI':
+    for val in df_mimo_plot['MIMO Display']:
+        if val == 'Yes':
             detalle = "<br>".join([f"{tec}: {cnt}" for tec, cnt in tech_counts.items()])
         else:
             detalle = ""
         customdata_mimo.append([detalle])
 
-    # Crear gráfico
+    # Crear gráfico con columna modificada
     fig_mimo = px.pie(
-        df_filtrado,
-        names='Tiene instalado Massive MIMO',
+        df_mimo_plot,
+        names='MIMO Display',
         title='Massive MIMO Distribution',
         color_discrete_sequence=px.colors.qualitative.Set2
     )
 
     fig_mimo.update_traces(
         textinfo='percent+label',
-        hovertemplate='<b>%{label}</b><br>Cantidad: %{value}<br>%{customdata[0]}',
+        hovertemplate='<b>%{label}</b><br>Count: %{value}<br>%{customdata[0]}',
         customdata=customdata_mimo
     )
 
@@ -152,28 +159,32 @@ with col2:
     if '4G' in tecnologias:
         st.subheader("📶 5G Ready")
 
-        # Conteo por tecnología para los que tienen 'Si'
-        tech_5g_si = df_filtrado[df_filtrado['5G Ready'].str.upper() == 'SI']
+        # Crear columna temporal con Yes/No para visualización
+        df_5g_plot = df_filtrado.copy()
+        df_5g_plot['5G Display'] = df_5g_plot['5G Ready'].apply(lambda x: 'Yes' if str(x).strip().upper() == 'SI' else 'No')
+
+        # Conteo por tecnología con 'Yes'
+        tech_5g_si = df_5g_plot[df_5g_plot['5G Display'] == 'Yes']
         tech_5g_counts = tech_5g_si['Technology'].value_counts().to_dict()
 
         customdata_5g = []
-        for val in df_filtrado['5G Ready']:
-            if str(val).upper() == 'SI':
+        for val in df_5g_plot['5G Display']:
+            if val == 'Yes':
                 detalle = "<br>".join([f"{tec}: {cnt}" for tec, cnt in tech_5g_counts.items()])
             else:
                 detalle = ""
             customdata_5g.append([detalle])
 
         fig_5g = px.pie(
-            df_filtrado,
-            names='5G Ready',
-            title='Distribution 5G Ready',
+            df_5g_plot,
+            names='5G Display',
+            title='5G Ready Distribution',
             color_discrete_sequence=px.colors.qualitative.Set1
         )
 
         fig_5g.update_traces(
             textinfo='percent+label',
-            hovertemplate='<b>%{label}</b><br>Cantidad: %{value}<br>%{customdata[0]}',
+            hovertemplate='<b>%{label}</b><br>Count: %{value}<br>%{customdata[0]}',
             customdata=customdata_5g
         )
 
@@ -182,28 +193,32 @@ with col2:
 # --- GRAFICO PIE BEAMFORMING ---
 st.subheader("📡 Distribution by support to Beamforming")
 
-# Conteo por tecnología para los que tienen 'Si'
-tech_beam_si = df_filtrado[df_filtrado['Soporta Beamforming'].str.upper() == 'SI']
+# Crear columna temporal con Yes/No para visualización
+df_beam_plot = df_filtrado.copy()
+df_beam_plot['Beam Display'] = df_beam_plot['Soporta Beamforming'].apply(lambda x: 'Yes' if str(x).strip().upper() == 'SI' else 'No')
+
+# Conteo por tecnología con 'Yes'
+tech_beam_si = df_beam_plot[df_beam_plot['Beam Display'] == 'Yes']
 tech_beam_counts = tech_beam_si['Technology'].value_counts().to_dict()
 
 customdata_beam = []
-for val in df_filtrado['Soporta Beamforming']:
-    if str(val).upper() == 'SI':
+for val in df_beam_plot['Beam Display']:
+    if val == 'Yes':
         detalle = "<br>".join([f"{tec}: {cnt}" for tec, cnt in tech_beam_counts.items()])
     else:
         detalle = ""
     customdata_beam.append([detalle])
 
 fig_beam = px.pie(
-    df_filtrado,
-    names='Soporta Beamforming',
+    df_beam_plot,
+    names='Beam Display',
     title='Beamforming Support',
     color_discrete_sequence=px.colors.qualitative.Set3
 )
 
 fig_beam.update_traces(
     textinfo='percent+label',
-    hovertemplate='<b>%{label}</b><br>Cantidad: %{value}<br>%{customdata[0]}',
+    hovertemplate='<b>%{label}</b><br>Count: %{value}<br>%{customdata[0]}',
     customdata=customdata_beam
 )
 
