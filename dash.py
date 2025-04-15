@@ -87,15 +87,15 @@ df_filtrado['Activo'] = df_filtrado['Cell Activate State'].apply(lambda x: 'Acti
 
 # --- GRAFICO BARRAS: ESTACIONES POR DEPARTAMENTO ---
 st.subheader("📊 Base Stations by Department")
-conteo_dep = df_filtrado.groupby(['Departamento', 'site_id']).size().reset_index(name='Cantidad')
-conteo_dep = conteo_dep.groupby('Departamento')['site_id'].count().reset_index(name='Cantidad')
+conteo_dep = df_filtrado.groupby(['Departamento', 'site_id']).size().reset_index(name='Quantity')
+conteo_dep = conteo_dep.groupby('Departamento')['site_id'].count().reset_index(name='Quantity')
 conteo_dep = conteo_dep[~conteo_dep['Departamento'].isin(['ND', 'Otros'])]  # excluir ND y Otros
-conteo_dep = conteo_dep.sort_values(by='Cantidad', ascending=False)
+conteo_dep = conteo_dep.sort_values(by='Quantity', ascending=False)
 
 fig_dep = px.bar(
     conteo_dep,
-    x='Cantidad', y='Departamento', orientation='h',
-    color='Cantidad', text='Cantidad', title='Base Stations by Department',
+    x='Quantity', y='Departamento', orientation='h',
+    color='Quantity', text='Quantity', title='Base Stations by Department',
     color_continuous_scale='Blues'
 )
 fig_dep.update_layout(
@@ -167,7 +167,7 @@ with col2:
         fig_5g = px.pie(
             df_filtrado,
             names='5G Ready',
-            title='Distribución 5G Ready',
+            title='Distribution 5G Ready',
             color_discrete_sequence=px.colors.qualitative.Set1
         )
 
